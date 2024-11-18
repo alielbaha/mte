@@ -1,60 +1,113 @@
-def metaphone(word):
+def double_metaphone(word):
     word = word.lower()
-    result = []
+    primary = []
+    secondary = []
 
-    # Phonetic mappings
+    # Consonant and vowel mappings for primary and secondary encoding
     phonetic_map = {
-        'a': '0', 'e': '0', 'i': '0', 'o': '0', 'u': '0',
-        'b': 'b', 'f': 'f', 'p': 'f', 'v': 'f',
-        'c': 'k', 'g': 'k', 'j': 'y', 'k': 'k', 'q': 'k',
-        's': 's', 'x': 's', 'z': 's', 'd': 't', 't': 't',
-        'l': 'l', 'm': 'm', 'n': 'n', 'r': 'r',
-        'w': 'w', 'y': 'y'
+        'a': ('0', '0'), 'e': ('0', '0'), 'i': ('0', '0'), 'o': ('0', '0'), 'u': ('0', '0'),
+        'b': ('b', 'b'), 'f': ('f', 'f'), 'p': ('f', 'p'), 'v': ('f', 'v'),
+        'c': ('k', 's'), 'g': ('k', 'k'), 'j': ('y', 'j'), 'k': ('k', 'k'), 'q': ('k', 'k'),
+        's': ('s', 's'), 'x': ('s', 'x'), 'z': ('s', 'z'), 'd': ('t', 't'), 't': ('t', 't'),
+        'l': ('l', 'l'), 'm': ('m', 'm'), 'n': ('n', 'n'), 'r': ('r', 'r'),
+        'w': ('w', 'w'), 'y': ('y', 'y')
     }
 
-    # Avoid unnecessary checks
+    # Helper function for handling specific cases for both primary and secondary encoding
+    def apply_special_rules(i, char, primary, secondary):
+        if char == 'c':
+            if i + 1 < len(word) and word[i + 1] in 'ei':  # "ce", "ci" -> 's'
+                primary.append('s')
+                secondary.append('s')
+            elif i + 1 < len(word) and word[i + 1] == 'h':  # "ch" -> 'x'
+                primary.append('x')
+                secondary.append('x')
+            else:
+                primary.append('k')
+                secondary.append('k')
+
+        elif char == 'g':
+            if i + 1 < len(word) and word[i + 1] == 'h':  # "gh" -> 'f'
+                primary.append('f')
+                secondary.append('f')
+            elif i + 1 < len(word) and word[i + 1] in 'ei':  # "ge", "gi" -> 'j'
+                primary.append('j')
+                secondary.append('j')
+            else:
+                primary.append('k')
+                secondary.append('k')
+
+        elif char == 'p':
+            if i + 1 < len(word) and word[i + 1] == 'h':  # "ph" -> 'f'
+                primary.append('f')
+                secondary.append('f')
+            else:
+                primary.append('f')
+                secondary.append('f')
+
+        elif char == 's':
+            if i + 1 < len(word) and word[i + 1] == 'h':  # "sh" -> 's'
+                primary.append('s')
+                secondary.append('s')
+            elif i + 1 < len(word) and word[i + 1] == 'c':  # "sc" -> 's'
+                primary.append('s')
+                secondary.append('s')
+            else:
+                primary.append('s')
+                secondary.append('s')
+
+        elif char == 't':
+            if i + 1 < len(word) and word[i + 1] == 'h':  # "th" -> '0'
+                primary.append('0')
+                secondary.append('0')
+            elif i + 1 < len(word) and word[i + 1] == 'w':  # "tw" -> 't'
+                primary.append('t')
+                secondary.append('t')
+            else:
+                primary.append('t')
+                secondary.append('t')
+
+        elif char == 'w':
+            if i == 0 or word[i - 1] not in 'aeiou':  # 'w' at the beginning
+                primary.append('w')
+                secondary.append('w')
+
+        elif char == 'y':
+            if i == 0 or word[i - 1] not in 'aeiou':  # 'y' at the beginning
+                primary.append('y')
+                secondary.append('y')
+
+        elif char == 'h':
+            # Handle 'h' depending on the letters before or after it
+            if i == 0 or word[i - 1] not in 'aeiou':
+                primary.append('')
+                secondary.append('')
+
+        else:
+            primary.append(phonetic_map.get(char, ('', ''))[0])
+            secondary.append(phonetic_map.get(char, ('', ''))[1])
+
     i = 0
     while i < len(word):
         char = word[i]
 
-        # Skip if the current character is a vowel and it's the same as the previous one
-        if char in 'aeiou' and (i == 0 or word[i - 1] not in 'aeiou'):
-            result.append(phonetic_map.get(char, ''))
+        # Handle vowels and special conditions (e.g., first character)
+        if char in 'aeiou':
+            if i == 0 or word[i - 1] not in 'aeiou':  # Avoid repeating vowels
+                primary.append('0')
+                secondary.append('0')
 
-        # Handle consonants based on context
-        elif char in phonetic_map:
-            if char == 'c':
-                # 'c' followed by 'e' or 'i' becomes 's', else 'k'
-                result.append('s' if i + 1 < len(word) and word[i + 1] in 'ei' else 'k')
-            elif char == 'g':
-                # 'g' followed by 'h' becomes 'f', else 'k' or 'j' depending on next letter
-                result.append('f' if i + 1 < len(word) and word[i + 1] == 'h' else ('j' if i + 1 < len(word) and word[i + 1] in 'ei' else 'k'))
-            elif char == 'p':
-                # 'ph' becomes 'f'
-                result.append('f' if i + 1 < len(word) and word[i + 1] == 'h' else 'f')
-            elif char == 's':
-                # 'sh' becomes 's'
-                result.append('s' if i + 1 < len(word) and word[i + 1] == 'h' else 's')
-            elif char == 't':
-                # 'th' becomes '0' (voiceless 'th')
-                result.append('0' if i + 1 < len(word) and word[i + 1] == 'h' else 't')
-            elif char == 'w':
-                # 'w' is kept only if it's at the beginning or before a vowel
-                if i == 0 or word[i - 1] not in 'aeiou':
-                    result.append('w')
-            elif char == 'y':
-                # 'y' is kept only if it's at the beginning or before a vowel
-                if i == 0 or word[i - 1] not in 'aeiou':
-                    result.append('y')
-            else:
-                result.append(phonetic_map[char])
+        else:
+            apply_special_rules(i, char, primary, secondary)
 
         i += 1
 
-    return ''.join(result)
+    return ''.join(primary), ''.join(secondary)
 
 
 # Example Usage:
 word = "philosophy"
-encoded_word = metaphone(word)
-print(f"Metaphone encoding of '{word}': {encoded_word}")
+primary_key, secondary_key = double_metaphone(word)
+print(f"Double Metaphone encoding of '{word}':")
+print(f"Primary: {primary_key}")
+print(f"Secondary: {secondary_key}")

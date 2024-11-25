@@ -1,113 +1,118 @@
-def double_metaphone(word):
-    word = word.lower()
-    primary = []
-    secondary = []
-
-    # Consonant and vowel mappings for primary and secondary encoding
-    phonetic_map = {
-        'a': ('0', '0'), 'e': ('0', '0'), 'i': ('0', '0'), 'o': ('0', '0'), 'u': ('0', '0'),
-        'b': ('b', 'b'), 'f': ('f', 'f'), 'p': ('f', 'p'), 'v': ('f', 'v'),
-        'c': ('k', 's'), 'g': ('k', 'k'), 'j': ('y', 'j'), 'k': ('k', 'k'), 'q': ('k', 'k'),
-        's': ('s', 's'), 'x': ('s', 'x'), 'z': ('s', 'z'), 'd': ('t', 't'), 't': ('t', 't'),
-        'l': ('l', 'l'), 'm': ('m', 'm'), 'n': ('n', 'n'), 'r': ('r', 'r'),
-        'w': ('w', 'w'), 'y': ('y', 'y')
-    }
-
-    # Helper function for handling specific cases for both primary and secondary encoding
-    def apply_special_rules(i, char, primary, secondary):
-        if char == 'c':
-            if i + 1 < len(word) and word[i + 1] in 'ei':  # "ce", "ci" -> 's'
-                primary.append('s')
-                secondary.append('s')
-            elif i + 1 < len(word) and word[i + 1] == 'h':  # "ch" -> 'x'
-                primary.append('x')
-                secondary.append('x')
-            else:
-                primary.append('k')
-                secondary.append('k')
-
-        elif char == 'g':
-            if i + 1 < len(word) and word[i + 1] == 'h':  # "gh" -> 'f'
-                primary.append('f')
-                secondary.append('f')
-            elif i + 1 < len(word) and word[i + 1] in 'ei':  # "ge", "gi" -> 'j'
-                primary.append('j')
-                secondary.append('j')
-            else:
-                primary.append('k')
-                secondary.append('k')
-
-        elif char == 'p':
-            if i + 1 < len(word) and word[i + 1] == 'h':  # "ph" -> 'f'
-                primary.append('f')
-                secondary.append('f')
-            else:
-                primary.append('f')
-                secondary.append('f')
-
-        elif char == 's':
-            if i + 1 < len(word) and word[i + 1] == 'h':  # "sh" -> 's'
-                primary.append('s')
-                secondary.append('s')
-            elif i + 1 < len(word) and word[i + 1] == 'c':  # "sc" -> 's'
-                primary.append('s')
-                secondary.append('s')
-            else:
-                primary.append('s')
-                secondary.append('s')
-
-        elif char == 't':
-            if i + 1 < len(word) and word[i + 1] == 'h':  # "th" -> '0'
-                primary.append('0')
-                secondary.append('0')
-            elif i + 1 < len(word) and word[i + 1] == 'w':  # "tw" -> 't'
-                primary.append('t')
-                secondary.append('t')
-            else:
-                primary.append('t')
-                secondary.append('t')
-
-        elif char == 'w':
-            if i == 0 or word[i - 1] not in 'aeiou':  # 'w' at the beginning
-                primary.append('w')
-                secondary.append('w')
-
-        elif char == 'y':
-            if i == 0 or word[i - 1] not in 'aeiou':  # 'y' at the beginning
-                primary.append('y')
-                secondary.append('y')
-
-        elif char == 'h':
-            # Handle 'h' depending on the letters before or after it
-            if i == 0 or word[i - 1] not in 'aeiou':
-                primary.append('')
-                secondary.append('')
-
-        else:
-            primary.append(phonetic_map.get(char, ('', ''))[0])
-            secondary.append(phonetic_map.get(char, ('', ''))[1])
-
-    i = 0
-    while i < len(word):
-        char = word[i]
-
-        # Handle vowels and special conditions (e.g., first character)
-        if char in 'aeiou':
-            if i == 0 or word[i - 1] not in 'aeiou':  # Avoid repeating vowels
-                primary.append('0')
-                secondary.append('0')
-
-        else:
-            apply_special_rules(i, char, primary, secondary)
-
-        i += 1
-
-    return ''.join(primary), ''.join(secondary)
-
-
-# Example Usage:
-word = "philosophy"
-primary_key, secondary_key = double_metaphone(word)
-print(f"Double Metaphone encoding of '{word}':")
-print(f"Primary: {primary_key}")
-print(f"Secondary: {secondary_key}")
+list_of_couples = [
+    ["Mehul Gupta", "Meryl Gupta"],
+    ["John Andrew Lewis", "Jahn Andrej Levis"],
+    ["Cyndi Eric Wood", "Candice Erick Waud"],
+    ["Mary Ellen", "Mari Ehlen"],
+    ["Carlos Alfonzo Diaz", "Carlow Diez"],
+    ["Anne Meier-King", "Ange Meyer-King"],
+    ["Michaela Hudson Bennett", "Michael Hudson"],
+    ["Alyson Colin Gray", "Alison Coplin Gray"],
+    ["Britney Alejandro Hughes", "Britni Alessandro"],
+    ["Dwayne Sanders", "Dwaine Xander"],
+    ["Jesse Jones", "Jessie Jonas"],
+    ["Cedric Maxwell Foster", "Cedric Marcell Foister"],
+    ["John Jacob", "John Jacobi"],
+    ["Peter Alfred Escher", "Pieter Alfreds Eshcher"],
+    ["Peter James Low", "Pete Lowd"],
+    ["Mehul Gupta", "Mehl Gutta"],
+    ["John Andrew Lewis", "Johan Andrew Lewise"],
+    ["Cyndi Eric Wood", "Candy Erin Wood"],
+    ["Mary Ellen", "Mare Ellens"],
+    ["Carlos Alfonzo Diaz", "Carlo Alford Diaz"],
+    ["Anne Meier-King", "Anny Merlin"],
+    ["Michaela Hudson Bennett", "Michele Bennett"],
+    ["Alyson Colin Gray", "Alys Corin"],
+    ["Britney Alejandro Hughes", "Britaney Alexander Hughes"],
+    ["Dwayne Sanders", "Sanders Dayne"],
+    ["Jesse Jones", "Josie Jones"],
+    ["Cedric Maxwell Foster", "Maxwell Gedris Foster"],
+    ["John Jacob", "Jacob Jahn"],
+    ["Peter Alfred Escher", "Petr Alfie"],
+    ["Peter James Low", "Pester Jamie Low"],
+    ["Mehul Gupta", "Mehul Gustaf"],
+    ["John Andrew Lewis", "Jorn Andrei Lenis"],
+    ["Cyndi Eric Wood", "Cyndie Erice"],
+    ["Mary Ellen", "Ellyn Mary"],
+    ["Carlos Alfonzo Diaz", "Carls Riaz"],
+    ["Anne Meier-King", "Anna Meier-King"],
+    ["Michaela Hudson Bennett", "Mikhaila Bennett"],
+    ["Alyson Colin Gray", "Colin Alston Gray"],
+    ["Britney Alejandro Hughes", "Alejandro Britney Hughie"],
+    ["Dwayne Sanders", "Ander Dwane"],
+    ["Jesse Jones", "Joynes Jesse"],
+    ["Cedric Maxwell Foster", "Cedric Falwell Fesler"],
+    ["John Jacob", "John Jago"],
+    ["Peter Alfred Escher", "Peter Escher Aled"],
+    ["Peter James Low", "James Petet Low"],
+    ["Mehul Gupta", "Mehul Gutt"],
+    ["John Andrew Lewis", "John Andie"],
+    ["Cyndi Eric Wood", "Wedd Cyndi Eric"],
+    ["Mary Ellen", "Marc Elle"],
+    ["Carlos Alfonzo Diaz", "Caryss Alfonza Diaz"],
+    ["Anne Meier-King", "Anne Meger-King"],
+    ["Michaela Hudson Bennett", "Michal Hudson Brett"],
+    ["Alyson Colin Gray", "Alyson Coplin Grey"],
+    ["Britney Alejandro Hughes", "Britney Leando Hughes"],
+    ["Dwayne Sanders", "Sandy Dwayne"],
+    ["Jesse Jones", "Jessel Jones"],
+    ["Cedric Maxwell Foster", "Cedric Foster Kambell"],
+    ["John Jacob", "Jaxon Jon"],
+    ["Peter Alfred Escher", "Peter Esther Alfres"],
+    ["Peter James Low", "Lowe Petek James"],
+    ["Dr.Stuti Aayush Agarwal", "Dr.Shruti Aayush Agarwal"],
+    ["William Benjamin Hall", "Willean Benjamin Hall"],
+    ["Er Saumya Dhruv Mehta", "Saumya Dhruv Mesta"],
+    ["Phd.Aaditya Kapoor", "Phd.Adith Kapoor"],
+    ["Samuel Gabriel Carter", "Samuel Ariel Carter"],
+    ["Rafael Ryan Turner", "Rafal Ryan Turner"],
+    ["Stephen Isaac Parker", "Stephen Izaac Parker"],
+    ["Jerry Edwards", "Derry Edwards"],
+    ["James Earl Smith", "James Earl Snith"],
+    ["Brian Gavin Collins", "Brian Cavin Collins"],
+    ["Michael Tyler Stewart", "Michael Kyler Stewart"],
+    ["Philip Owen Morris", "Philip Oden Morris"],
+    ["Neil Brandon Cook", "Neil Brandon Coop"],
+    ["Elizabeth Rogers", "Elisabetta Rogers"],
+    ["John Adrian Peterson", "John Adriano Peterson"],
+    ["Shawn Kevin Howard", "Shaan Kevin Howard"],
+    ["Anne Sebastian Watson", "Anne Sebastian Wasson"],
+    ["Joanne Colton Richardson", "Joanne Coltin Richardson"],
+    ["Katelyn Xavier Cox", "Kaelyn Xavier Cox"],
+    ["Sara Alex Brooks", "Saba Alex Brooks"],
+    ["Katherine D'Souza", "Katerina D'Souza"],
+    ["Dr.Stuti Aayush Agarwal", "Dr. Stuti Aarush Agarwal"],
+    ["William Benjamin Hall", "William Benhamin Hall"],
+    ["Er Saumya Dhruv Mehta", "Er Saurya Dhruv Mehta"],
+    ["Phd.Aaditya Kapoor", "Phd.Aaditya Zahoor"],
+    ["Samuel Gabriel Carter", "Manuel Gabriel Carter"],
+    ["Rafael Ryan Turner", "Rafael Bryan Turner"],
+    ["Stephen Isaac Parker", "Stellen Isaac Parker"],
+    ["Jerry Edwards", "Eduardo Jerry"],
+    ["James Earl Smith", "Jamey Earl Smith"],
+    ["Brian Gavin Collins", "Brian Gavin Cillis"],
+    ["Michael Tyler Stewart", "Stuart Michael Tyler"],
+    ["Philip Owen Morris", "Phil Owen Morris"],
+    ["Neil Brandon Cook", "Neil Braedon Cook"],
+    ["Elizabeth Rogers", "Rowen Elizabeth"],
+    ["John Adrian Peterson", "Henderson John Adrian"],
+    ["Shawn Kevin Howard", "Shawn Kelvin Howard"],
+    ["Anne Sebastian Watson", "Anne Bastian Watson"],
+    ["Joanne Colton Richardson", "Deanne Colton Richardson"],
+    ["Katelyn Xavier Cox", "Eavie Katelyn Cox"],
+    ["Sara Alex Brooks", "Sara Alix Brooks"],
+    ["Katherine D'Souza", "Katrin D'Souza"],
+    ["Shanaya Jha", "Shaniya Jha"],
+    ["Nicholas Jackson Thompson", "Nicholle Jackson Thompson"],
+    ["Isabella Christian Clark", "Isabella Christian Cleark"],
+    ["Evelyn Dylan Lewis", "Evelyn Dylan Lenis"],
+    ["Saanchi Aniruddh Soman", "Saanchi Aairah Soman"],
+    ["Amelia Brayden Walker", "Ameliya Brayden Walker"],
+    ["Justin Dominic Robinson", "Jusbir Dominic Robinson"],
+    ["Aaryan Pradeep Khanna", "Aarany Pradeep Khanna"],
+    ["Cooper Nathaniel Allen", "Cooper Nathaniel Allyn"],
+    ["Tristan Carlos Scott", "Tristin Carlos Scott"],
+    ["Allison Cameron Green", "Allissa Cameron Green"],
+    ["Jessica Antonio Mitchell", "Jerrica Antonio Mitchell"],
+    ["Arianna Eric Baker", "Arianna Erich Baker"],
+    ["Miguel Richard Collins", "Miguel Rishabh Collins"],
+]

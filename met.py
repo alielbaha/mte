@@ -69,3 +69,164 @@ plt.xlabel("Name Pair")
 plt.legend(title="Algorithm")
 plt.tight_layout()
 plt.show()
+
+
+
+##################################################################################à
+#runtime comparaison
+
+import random
+import string
+import time
+import matplotlib.pyplot as plt
+from difflib import SequenceMatcher
+from fuzzywuzzy import fuzz
+
+# Define the algorithms for comparison
+def levenshtein_similarity(a, b):
+    return fuzz.ratio(a, b)
+
+def jaro_similarity(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+def jaro_winkler_similarity(a, b):
+    return fuzz.WRatio(a, b)
+
+# Generate 100 pairs of random strings, each pair's total length increases by 1 character
+random_pairs = []
+base_length = 5  # Starting length for the strings
+for i in range(100):
+    length1 = base_length + i // 2  # Divide increment between two strings
+    length2 = base_length + i - length1
+    str1 = ''.join(random.choices(string.ascii_letters, k=length1))
+    str2 = ''.join(random.choices(string.ascii_letters, k=length2))
+    random_pairs.append([str1, str2])
+
+# Measure runtime with respect to string length for the generated pairs
+random_string_lengths = [len(pair[0]) + len(pair[1]) for pair in random_pairs]
+runtime_levenshtein = []
+runtime_jaro = []
+runtime_jaro_winkler = []
+
+for pair in random_pairs:
+    name1, name2 = pair
+    
+    # Levenshtein runtime
+    start_time = time.time()
+    levenshtein_similarity(name1, name2)
+    runtime_levenshtein.append(time.time() - start_time)
+    
+    # Jaro runtime
+    start_time = time.time()
+    jaro_similarity(name1, name2)
+    runtime_jaro.append(time.time() - start_time)
+    
+    # Jaro-Winkler runtime
+    start_time = time.time()
+    jaro_winkler_similarity(name1, name2)
+    runtime_jaro_winkler.append(time.time() - start_time)
+
+# Plotting runtime comparison
+plt.figure(figsize=(10, 6))
+plt.plot(
+    random_string_lengths,
+    runtime_levenshtein,
+    marker="o",
+    label="Levenshtein",
+)
+plt.plot(
+    random_string_lengths,
+    runtime_jaro,
+    marker="s",
+    label="Jaro",
+)
+plt.plot(
+    random_string_lengths,
+    runtime_jaro_winkler,
+    marker="^",
+    label="Jaro-Winkler",
+)
+
+# Add labels, legend, and title
+plt.title("Runtime of Fuzzy Matching Algorithms vs String Length (Random Strings)")
+plt.xlabel("String Length (Sum of Pair Lengths)")
+plt.ylabel("Runtime (seconds)")
+plt.legend()
+plt.grid()
+plt.show()
+
+
+##################################################################################################
+#Recall
+
+
+import pandas as pd
+import time
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+# Evaluate the algorithms for each pair
+results = []
+for pair in list_of_couples:
+    name1, name2 = pair
+    results.append({
+        "Name 1": name1,
+        "Name 2": name2,
+        "Levenshtein Similarity": levenshtein_similarity(name1, name2),
+        "Jaro Similarity": jaro_similarity(name1, name2) * 100,
+        "Jaro Winkler Similarity": jaro_winkler_similarity(name1, name2)
+    })
+
+# Convert results to a DataFrame
+df_results = pd.DataFrame(results)
+
+# Calculate recall
+def calculate_recall(predictions, ground_truth, threshold=80):
+    return np.mean([1 if pred >= threshold else 0 for pred in predictions])
+
+# Simulate ground truth matches (100% matches for demonstration)
+ground_truth = [100] * len(list_of_couples)
+
+# Calculate recall for each metric
+levenshtein_scores = df_results["Levenshtein Similarity"].tolist()
+jaro_scores = df_results["Jaro Similarity"].tolist()
+jaro_winkler_scores = df_results["Jaro Winkler Similarity"].tolist()
+
+recall_levenshtein = calculate_recall(levenshtein_scores, ground_truth)
+recall_jaro = calculate_recall(jaro_scores, ground_truth)
+recall_jaro_winkler = calculate_recall(jaro_winkler_scores, ground_truth)
+
+# Time complexity analysis
+algorithms = ["Levenshtein", "Jaro", "Jaro-Winkler"]
+time_complexities = []
+
+for algo in algorithms:
+    start_time = time.time()
+    for pair in list_of_couples:
+        name1, name2 = pair
+        if algo == "Levenshtein":
+            levenshtein_similarity(name1, name2)
+        elif algo == "Jaro":
+            jaro_similarity(name1, name2)
+        elif algo == "Jaro-Winkler":
+            jaro_winkler_similarity(name1, name2)
+    end_time = time.time()
+    time_complexities.append(end_time - start_time)
+
+# Plotting recall comparison
+plt.figure(figsize=(8, 6))
+plt.bar(algorithms, [recall_levenshtein, recall_jaro, recall_jaro_winkler], alpha=0.7)
+plt.title("Recall Comparison of Fuzzy Matching Algorithms")
+plt.ylabel("Recall")
+plt.xlabel("Algorithm")
+plt.ylim(0, 1)
+plt.show()
+
+# Plotting time complexity comparison
+plt.figure(figsize=(8, 6))
+plt.bar(algorithms, time_complexities, alpha=0.7)
+plt.title("Time Complexity of Fuzzy Matching Algorithms")
+plt.ylabel("Time (seconds)")
+plt.xlabel("Algorithm")
+plt.show()

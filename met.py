@@ -607,3 +607,79 @@ def soundex2(s_in: str) -> str:
     s_in = s_in.ljust(4)
     
     return s_in
+
+
+
+#############################################################################
+#Soundex 2 corrected
+
+
+
+import unicodedata
+import re
+
+def remove_accents(input_str):
+    """
+    Removes accents from the input string and converts 'Ç' to 'C'.
+    """
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return ''.join([c for c in nfkd_form if not unicodedata.combining(c)]).replace('Ç', 'C')
+
+def french_soundex2(name):
+    """
+    Implements the French Soundex 2 algorithm as described in SQLPro's guide.
+    :param name: The input string to encode
+    :return: The Soundex 2 encoded string
+    """
+    # 1. Preprocessing: Remove accents, convert to uppercase, remove spaces and hyphens
+    name = remove_accents(name.upper())
+    name = re.sub(r'[^\w]', '', name)  # Remove non-alphanumeric characters
+
+    if not name:
+        return "0000"  # Return a default value for empty input
+
+    # 2. Phonetic transformations
+    # Replace specific letter groups
+    replacements = {
+        "GUI": "KI", "GUE": "KE", "GA": "KA", "GO": "KO", "GU": "KU",
+        "MAC": "MCC", "KN": "NN", "PF": "FF", "SCH": "SS", "PH": "F"
+    }
+    for key, value in replacements.items():
+        name = name.replace(key, value)
+
+    # Replace vowels (except the first letter)
+    vowels = "AEIOUY"
+    first_letter = name[0]
+    name = first_letter + re.sub(f"[{vowels}]", "A", name[1:])
+
+    # Remove 'H' unless preceded by 'C' or 'S'
+    name = re.sub(r'([^CS])H', r'\1', name)
+
+    # Remove 'Y' unless preceded by 'A'
+    name = re.sub(r'([^A])Y', r'\1', name)
+
+    # Remove terminal 'A', 'T', 'D', 'S'
+    name = re.sub(r'[ATDS]$', '', name)
+
+    # Remove all 'A's except the initial one
+    name = first_letter + name[1:].replace("A", "")
+
+    # Eliminate consecutive duplicate letters
+    result = name[0]
+    for char in name[1:]:
+        if char != result[-1]:
+            result += char
+
+    # 3. Finalization: Retain first four characters, pad with zeros if necessary
+    return (result + "0000")[:4]
+
+# Example usage
+if __name__ == "__main__":
+    word = "Brouard"
+    soundex_code = french_soundex2(word)
+    print(f"French Soundex 2 code for '{word}': {soundex_code}")
+
+    word2 = "Michel"
+    soundex_code2 = french_soundex2(word2)
+    print(f"French Soundex 2 code for '{word2}': {soundex_code2}")
+

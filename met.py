@@ -230,3 +230,35 @@ plt.title("Time Complexity of Fuzzy Matching Algorithms")
 plt.ylabel("Time (seconds)")
 plt.xlabel("Algorithm")
 plt.show()
+
+#####################################################
+#list of french names 
+list_of_couples_with_boolean = [
+    ["Jean Dupont", "Jeanne Dupon"],
+    ["Marie-Claire Benoît", "Marianne Claire Benoi"],
+    ["Julien Moreau", "Juliette Morel"],
+    ["Céline Lambert", "Séline Lambaire"],
+    ["Louis Martin", "Louise Martine"],
+    ["Émile Durand", "Émilie Durant"],
+    ["Antoine Lefèvre", "Antoinette Lefevre"],
+    ["Chloé Petit", "Claudine Petie"],
+    ["Pierre Garnier", "Perrine Garnie"],
+    ["Camille Fontaine", "Camilla Fontin"],
+    ["Philippe Gauthier", "Philippa Gautier"],
+    ["Hélène Marchand", "Élena Marchande"],
+    ["François Bernard", "Francine Bernarde"],
+    ["Claire Olivier", "Clara Olivie"],
+    ["Nicolas Beaulieu", "Nicole Beauleu"],
+    ["Pauline Charpentier", "Paulette Charpent"],
+    ["Jacques Rousseau", "Jacqueline Roussel"],
+    ["Sophie Lefebvre", "Sophia Lefèvre"],
+    ["Thomas Blanc", "Thomé Blanche"],
+    ["Isabelle Durieux", "Isabeau Durié"],
+    ["Laurent Renard", "Laurette Renarde"],
+    ["Charlotte Perrot", "Charline Perron"],
+    ["Alain Dupuis", "Aline Dupay"],
+    ["Victor Fournier", "Violette Fournière"],
+    ["Sandrine Girard", "Sandie Giraud"],
+    ["Gilles Richard", "Gillian Richaud"],
+    ["Elodie Noel", "Eloine Noël"],
+    ["Hugo Vincent", "Hugon Vincente"]]

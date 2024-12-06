@@ -262,3 +262,348 @@ list_of_couples_with_boolean = [
     ["Gilles Richard", "Gillian Richaud"],
     ["Elodie Noel", "Eloine Noël"],
     ["Hugo Vincent", "Hugon Vincente"]]
+
+
+##########################################
+#Soundex 2
+import unicodedata
+import re
+
+def remove_accents(input_str):
+    """
+    Removes accents from a string.
+    """
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    only_ascii = nfkd_form.encode('ASCII', 'ignore')
+    return only_ascii.decode('utf-8')
+
+def french_soundex2(name):
+    """
+    Implementation of the French Soundex 2 algorithm.
+    :param name: The name or word to encode
+    :return: The encoded Soundex 2 value
+    """
+    # 1. Preprocessing: Remove accents, make uppercase, and remove non-alphabetic characters
+    name = remove_accents(name.upper())
+    name = re.sub(r'[^A-Z]', '', name)
+
+    # 2. Replace 'Y' with 'I'
+    name = name.replace('Y', 'I')
+
+    # 3. Remove 'H' unless preceded by C, P, or S
+    name = re.sub(r'([^CPS])H', r'\1', name)
+
+    # 4. Replace 'PH' with 'F'
+    name = name.replace('PH', 'F')
+
+    # 5. Replace specific groups
+    replacements = {
+        'AI': 'Y', 'EI': 'Y', 'AU': 'O', 'EAU': 'O', 'OUA': '2',
+        'OI': '2', 'OY': '2', 'OU': '3', 'EIN': '4', 'AIN': '4',
+        'EIM': '4', 'AIM': '4', 'CH': '5', 'SCH': '5', 'SH': '5',
+        'GN': 'N'
+    }
+    for key, value in replacements.items():
+        name = name.replace(key, value)
+
+    # 6. Handle nasal sounds
+    name = re.sub(r'AN([^AEIOU])', r'1\1', name)
+    name = re.sub(r'ON([^AEIOU])', r'1\1', name)
+    name = re.sub(r'AM([^AEIOU])', r'1\1', name)
+    name = re.sub(r'EN([^AEIOU])', r'1\1', name)
+    name = re.sub(r'EM([^AEIOU])', r'1\1', name)
+
+    # 7. Replace C followed by E/I with S
+    name = re.sub(r'C([EI])', r'S\1', name)
+
+    # 8. Replace remaining consonants
+    consonant_replacements = {
+        'C': 'K', 'Q': 'K', 'QU': 'K', 'GU': 'K', 'GA': 'KA',
+        'GO': 'KO', 'GY': 'KY', 'B': 'F', 'V': 'F', 'D': 'T',
+        'P': 'T', 'J': 'G', 'M': 'N'
+    }
+    for key, value in consonant_replacements.items():
+        name = name.replace(key, value)
+
+    # 9. Remove duplicate letters
+    result = ''
+    for i, char in enumerate(name):
+        if i == 0 or char != name[i - 1]:
+            result += char
+
+    # 10. Remove trailing 'T' and 'X'
+    result = re.sub(r'[TX]$', '', result)
+
+    # 11. Format the result
+    if len(result) < 4:
+        result += '0' * (4 - len(result))  # Pad with zeros if shorter than 4 characters
+    return result[:4]  # Ensure the result is exactly 4 characters
+
+# Example usage
+if __name__ == "__main__":
+    word = "Brouard"
+    soundex_code = french_soundex2(word)
+    print(f"French Soundex 2 code for '{word}': {soundex_code}")
+################################################################################################
+#Phonex 
+#!/bin/python
+# -*- coding: UTF-8 -*-
+
+# Origine : Algorithme Phonex de Frédéric BROUARD (31/3/99)
+# Source : http://sqlpro.developpez.com/cours/soundex
+# Version Python : Christian Pennaforte - 5 avril 2005
+# Suite : Florent Carlier
+# Adaptation Python 3: Ophir LOJKINE
+
+import re
+import unicodedata
+
+def remove_accents(input_str):
+    """
+    >>> remove_accents("héhé")
+    "hehe
+    """
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    only_ascii = nfkd_form.encode('ASCII', 'ignore')
+    return only_ascii.decode("utf8")
+
+def phonex(chaine):
+    """Phonex est un algorithme de Soundex plus perfectionné encore que la version francisée de Soundex2.
+    Sachez que Phonex est optimisée pour le langage français, sait reconnaître différents types de sons comme les sons
+    ‘on’, ‘ai’, ‘ein’, etc...
+    et place son résultat sous la forme d’un réel de type double précision (5.0 x 10-324 .. 1.7 x
+    10308 sur 15 à 16 chiffres significatifs). Son temps de calcul est double de Soundex et 30% supérieure seulement
+    à Soundex2.
+
+    >>> phonex("PHYLAURHEIMSMET")
+    0.29241361598339205
+
+    :param chaine: La chaine de caractères à encoder
+    :return: L'encodage sous forme de nombre à virgule flottante
+    """
+    # 0 On met la chaîne en majuscules, on vire les caractères parasites
+    chaine = remove_accents(chaine)
+    chaine = re.sub(r"[ \-.+*/,:;_']", "", chaine)
+    chaine = chaine.upper()
+
+    # 1 remplacer les y par des i
+    r = chaine.replace('Y', 'I')
+
+    # 2 supprimer les h qui ne sont pas précédées de c ou de s ou de p
+    r = re.sub(r'([^PCS])H', r'\1', r)
+
+    # 3 remplacement du ph par f
+    r = r.replace(r'PH', r'F')
+
+    # 4 remplacer les groupes de lettres suivantes :
+    r = re.sub(r'G(AI?[NM])', r'K\1', r)
+
+    # 5 remplacer les occurrences suivantes, si elles sont suivies par une lettre a, e, i, o, ou u :
+    r = re.sub(r'[AE]I[NM]([AEIOU])', r'YN\1', r)
+
+    # 6 remplacement de groupes de 3 lettres (sons 'o', 'oua', 'ein') :
+    r = r.replace('EAU', 'O')
+    r = r.replace('OUA', '2')
+    r = r.replace('EIN', '4')
+    r = r.replace('AIN', '4')
+    r = r.replace('EIM', '4')
+    r = r.replace('AIM', '4')
+
+    # 7 remplacement du son É:
+    r = r.replace('É', 'Y')  # CP : déjà fait en étape 0
+    r = r.replace('È', 'Y')  # CP : déjà fait en étape 0
+    r = r.replace('Ê', 'Y')  # CP : déjà fait en étape 0
+    r = r.replace('AI', 'Y')
+    r = r.replace('EI', 'Y')
+    r = r.replace('ER', 'YR')
+    r = r.replace('ESS', 'YS')
+    r = r.replace('ET', 'YT')  # CP : différence entre la version Delphi et l'algo
+    r = r.replace('EZ', 'YZ')
+
+    # 8 remplacer les groupes de 2 lettres suivantes (son â..anâ.. et â..inâ..), sauf sâ..il sont suivi par une
+    # lettre a, e, i o, u ou un son 1 Ã  4 :
+    r = re.sub(r'AN([^AEIOU1234])', r'1\1', r)
+    r = re.sub(r'ON([^AEIOU1234])', r'1\1', r)
+    r = re.sub(r'AM([^AEIOU1234])', r'1\1', r)
+    r = re.sub(r'EN([^AEIOU1234])', r'1\1', r)
+    r = re.sub(r'EM([^AEIOU1234])', r'1\1', r)
+    r = re.sub(r'IN([^AEIOU1234])', r'4\1', r)
+
+    # 9 remplacer les s par des z sâ..ils sont suivi et précédés des lettres a, e, i, o,u ou dâ..un son 1 Ã  4
+    r = re.sub(r'([AEIOUY1234])S([AEIOUY1234])', r'\1Z\2', r)
+    # CP : ajout du Y Ã  la liste
+
+    # 10 remplacer les groupes de 2 lettres suivants :
+    r = r.replace('OE', 'E')
+    r = r.replace('EU', 'E')
+    r = r.replace('AU', 'O')
+    r = r.replace('OI', '2')
+    r = r.replace('OY', '2')
+    r = r.replace('OU', '3')
+
+    # 11 remplacer les groupes de lettres suivants
+    r = r.replace('CH', '5')
+    r = r.replace('SCH', '5')
+    r = r.replace('SH', '5')
+    r = r.replace('SS', 'S')
+    r = r.replace('SC', 'S')  # CP : problème pour PASCAL, mais pas pour PISCINE ?
+
+    # 12 remplacer le c par un s s'il est suivi d'un e ou d'un i
+    # CP : à mon avis, il faut inverser 11 et 12 et ne pas faire la dernière ligne du 11
+    r = re.sub(r'C([EI])', r'S\1', r)
+
+    # 13 remplacer les lettres ou groupe de lettres suivants :
+    r = r.replace('C', 'K')
+    r = r.replace('Q', 'K')
+    r = r.replace('QU', 'K')
+    r = r.replace('GU', 'K')
+    r = r.replace('GA', 'KA')
+    r = r.replace('GO', 'KO')
+    r = r.replace('GY', 'KY')
+
+    # 14 remplacer les lettres suivante :
+    r = r.replace('A', 'O')
+    r = r.replace('D', 'T')
+    r = r.replace('P', 'T')
+    r = r.replace('J', 'G')
+    r = r.replace('B', 'F')
+    r = r.replace('V', 'F')
+    r = r.replace('M', 'N')
+
+    # 15 Supprimer les lettres dupliquées
+    oldc = '#'
+    newr = ''
+    for c in r:
+        if oldc != c: newr = newr + c
+        oldc = c
+    r = newr
+
+    # 16 Supprimer les terminaisons suivantes : t, x
+    r = re.sub(r'(.*)[TX]$', r'\1', r)
+
+    # 17 Affecter à chaque lettre le code numérique correspondant en partant de la dernière lettre
+    num = ['1', '2', '3', '4', '5', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'N', 'O', 'R', 'S', 'T', 'U', 'W', 'X', 'Y', 'Z']
+    l = []
+    for c in r:
+        l.append(num.index(c))
+
+    # 18 Convertissez les codes numériques ainsi obtenu en un nombre de base 22 exprimé en virgule flottante.
+    res = 0.
+    i = 1
+    for n in l:
+        res = n * 22 ** -i + res
+        i = i + 1
+
+    return res
+
+
+#################################################
+#Soundex 2
+def soundex2(s_in: str) -> str:
+    # Define constants
+    Voyelle = ['E', 'I', 'O', 'U']
+    Combin1 = [
+        ('GUI', 'KI'), ('GUE', 'KE'), ('GA', 'KA'), ('GO', 'KO'), ('GU', 'K'),
+        ('CA', 'KA'), ('CO', 'KO'), ('CU', 'KU'), ('Q', 'K'), ('CC', 'K'), ('CK', 'K')
+    ]
+    Combin2 = [
+        ('ASA', 'AZA'), ('KN', 'NN'), ('PF', 'FF'), ('PH', 'FF'), ('SCH', 'SSS')
+    ]
+    
+    # Helper function: SearchReplace
+    def search_replace(string, old, new):
+        return string.replace(old, new)
+
+    # Step 0: Handle trivial case
+    if not s_in:
+        return '    '
+    
+    # Step 1-3: Prepare the string
+    s_in = s_in.upper()
+    s_in = s_in.replace('É', 'E').replace('È', 'E').replace('Ç', 'C').replace('À', 'A').replace('Ù', 'U')  # Convert accents
+    
+    l_sin = len(s_in)
+
+    # Step 4: Handle single-character input
+    if l_sin == 1:
+        return s_in + '   '
+    
+    # Step 5: Replace primary consonants
+    for old, new in Combin1:
+        s_in = search_replace(s_in, old, new)
+    
+    # Step 6: Replace vowels except Y (and not the first letter)
+    s_in2 = s_in[1:]
+    for vowel in Voyelle:
+        s_in2 = search_replace(s_in2, vowel, 'A')
+    s_in = s_in[0] + s_in2
+    
+    # Step 7: Replace prefixes
+    l_sin = len(s_in)
+    if l_sin >= 2:
+        prfx = s_in[:2]
+        if prfx == 'KN':
+            prfx = 'NN'
+        if prfx in ['PH', 'PF']:
+            prfx = 'FF'
+        if l_sin == 2:
+            s_in = prfx
+        else:
+            s_in = prfx + s_in[2:]
+    if l_sin >= 3:
+        prfx = s_in[:3]
+        if prfx == 'MAC':
+            prfx = 'MCC'
+        if prfx == 'SCH':
+            prfx = 'SSS'
+        if prfx == 'ASA':
+            prfx = 'AZA'
+        if l_sin == 3:
+            s_in = prfx
+        else:
+            s_in = prfx + s_in[3:]
+    
+    # Step 8: Replace complementary combinations
+    s_in2 = s_in[1:]
+    for old, new in Combin2:
+        s_in2 = search_replace(s_in2, old, new)
+    s_in = s_in[0] + s_in2
+    
+    # Step 9: Remove H except in CH or SH
+    l_sin = len(s_in)
+    s_in2 = ''
+    for i in range(l_sin):
+        if s_in[i] != 'H' or (i > 0 and s_in[i - 1] in ['C', 'S']):
+            s_in2 += s_in[i]
+    s_in = s_in2
+    
+    # Step 10: Remove Y except after A
+    s_in2 = ''
+    for i in range(len(s_in)):
+        if s_in[i] != 'Y' or (i > 0 and s_in[i - 1] == 'A'):
+            s_in2 += s_in[i]
+    s_in = s_in2
+    
+    # Step 11: Remove endings A, T, D, S
+    if s_in[-1] in ['A', 'T', 'D', 'S']:
+        s_in = s_in[:-1]
+    
+    # Step 12: Remove all A except at the start
+    s_in2 = s_in[0]
+    for i in range(1, len(s_in)):
+        if s_in[i] != 'A':
+            s_in2 += s_in[i]
+    s_in = s_in2
+    
+    # Step 13: Remove repeated letters
+    s_in2 = s_in[0]
+    for i in range(1, len(s_in)):
+        if s_in[i] != s_in[i - 1]:
+            s_in2 += s_in[i]
+    s_in = s_in2
+    
+    # Step 14: Retain only 4 characters, pad if necessary
+    s_in = s_in[:4]
+    s_in = s_in.ljust(4)
+    
+    return s_in

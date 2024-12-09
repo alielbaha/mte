@@ -683,3 +683,33 @@ if __name__ == "__main__":
     soundex_code2 = french_soundex2(word2)
     print(f"French Soundex 2 code for '{word2}': {soundex_code2}")
 
+################################################################################################
+
+
+
+##########################################################
+
+import csv
+
+# Nom du fichier CSV
+nom_fichier = 'votre_fichier.csv'
+
+# Ouvrir et lire le fichier CSV
+with open(nom_fichier, mode='r', newline='', encoding='utf-8') as fichier:
+    lecteur_csv = csv.reader(fichier)
+    
+    # Liste pour stocker les lignes qui correspondent à la condition
+    lignes_filtrees = []
+
+    # Parcours du fichier ligne par ligne
+    for ligne in lecteur_csv:
+        # Vérifier si la troisième colonne contient le mot "french"
+        if len(ligne) >= 3 and 'french' in ligne[2].lower():  # la troisième colonne est à l'index 2
+            lignes_filtrees.append(ligne)
+
+# Générer une liste de couples de valeurs consécutives dans 'lignes_filtrees'
+couples = [(lignes_filtrees[i], lignes_filtrees[i + 1]) for i in range(len(lignes_filtrees) - 1)]
+
+# Afficher la liste des couples
+for couple in couples:
+    print(couple)

@@ -688,21 +688,42 @@ if __name__ == "__main__":
 
 
 ##########################################################
-import pandas as pd
+\documentclass{article}
+\usepackage{pgfgantt}
 
-# Nom du fichier CSV
-nom_fichier = 'votre_fichier.csv'
+\begin{document}
 
-# Lire le fichier CSV avec pandas
-df = pd.read_csv(nom_fichier, encoding='utf-8')
+\section*{Gantt Chart Example}
 
-# Filtrer les lignes où la troisième colonne (index 2) contient "french"
-df_filtre = df[df.iloc[:, 2].str.contains('french', case=False, na=False)]
+\begin{ganttchart}[
+    vgrid,
+    hgrid,
+    title/.append style={fill=blue!10},
+    title label font=\bfseries\footnotesize,
+    bar/.append style={fill=blue!50},
+    bar label font=\footnotesize\textbf,
+    milestone/.append style={fill=red},
+    milestone label font=\footnotesize\textit
+]{1}{12} % Timeline from month 1 to 12
 
-# Extraire la première colonne (index 0) et créer des couples successifs
-premiere_colonne = df_filtre.iloc[:, 0].tolist()
-couples = [(premiere_colonne[i], premiere_colonne[i + 1]) for i in range(len(premiere_colonne) - 1)]
+% Define the chart title
+\gantttitle{2024}{12} \\
 
-# Afficher les couples
-for couple in couples:
-    print(couple)
+% Months
+\gantttitlelist{1,...,12}{1} \\
+
+% Add tasks
+\ganttbar{Task 1}{1}{3} \\
+\ganttlinkedbar{Task 2}{4}{6} \\
+\ganttlinkedbar{Task 3}{7}{10} \\
+
+% Add a milestone
+\ganttmilestone{Milestone 1}{11} \\
+
+% Add a group
+\ganttgroup{Project Phase 1}{1}{6}
+
+\end{ganttchart}
+
+\end{document}
+

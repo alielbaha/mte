@@ -688,28 +688,21 @@ if __name__ == "__main__":
 
 
 ##########################################################
-
-import csv
+import pandas as pd
 
 # Nom du fichier CSV
 nom_fichier = 'votre_fichier.csv'
 
-# Ouvrir et lire le fichier CSV
-with open(nom_fichier, mode='r', newline='', encoding='utf-8') as fichier:
-    lecteur_csv = csv.reader(fichier)
-    
-    # Liste pour stocker les lignes qui correspondent à la condition
-    lignes_filtrees = []
+# Lire le fichier CSV avec pandas
+df = pd.read_csv(nom_fichier, encoding='utf-8')
 
-    # Parcours du fichier ligne par ligne
-    for ligne in lecteur_csv:
-        # Vérifier si la troisième colonne contient le mot "french"
-        if len(ligne) >= 3 and 'french' in ligne[2].lower():  # la troisième colonne est à l'index 2
-            lignes_filtrees.append(ligne)
+# Filtrer les lignes où la troisième colonne (index 2) contient "french"
+df_filtre = df[df.iloc[:, 2].str.contains('french', case=False, na=False)]
 
-# Générer une liste de couples de valeurs consécutives dans 'lignes_filtrees'
-couples = [(lignes_filtrees[i], lignes_filtrees[i + 1]) for i in range(len(lignes_filtrees) - 1)]
+# Extraire la première colonne (index 0) et créer des couples successifs
+premiere_colonne = df_filtre.iloc[:, 0].tolist()
+couples = [(premiere_colonne[i], premiere_colonne[i + 1]) for i in range(len(premiere_colonne) - 1)]
 
-# Afficher la liste des couples
+# Afficher les couples
 for couple in couples:
     print(couple)

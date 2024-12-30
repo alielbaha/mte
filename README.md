@@ -1,34 +1,27 @@
-takes into account the three fundamental editing operations - insertions, deletions and substitutions - in order to evaluate the dissimilarity between two strings.
-Levenshtein distance is defined as the minimum number of single-character edits required to convert one string (𝑥) into another (𝑦). Mathematically, it is expressed as:
-
-
-L(x, y)=\min \begin{cases}L(x-1, y)+1 & \text { (deletion) } \\ L(x, y-1)+1 & \text { (insertion) } \\  \ L(x-1, y-1)+\text { cost }& \text { (substitution) }\end{cases}
-
-The distance is computed using dynamic programming, filling a two-dimensional matrix where each cell represents the distance for a substring pair
+Developed in the early 20th century by Robert C. Russell and Margaret K. Odell, the Soundex algorithm focuses on encoding names and words based on how they sound in English. Unlike traditional edit-distance metrics, Soundex prioritizes phonetic similarity, enabling it to handle variations in spelling that sound similar when spoken (e.g., "Smith" and "Smyth").
 
 
 
+Soundex encodes words into a fixed-length alphanumeric code. The algorithm processes input strings as follows:
+1. Retain the First Letter:
+      - Keep the first letter of the word (converted to uppercase).
+
+2. Encode the Remaining Letters using the following table
 
 
 
-Algorithmic Implementation
 
-The Levenshtein distance is commonly implemented using a dynamic programming approach.
-Initialization:
+3.Remove Adjacent Duplicates
 
-Create a matrix 𝐷 of size (𝑚+1)×(𝑛+1) where 𝑚 and 𝑛 are the lengths of 𝑥 and 𝑦.
-Initialize the first row and column to represent the cost of transforming one string to an empty string.
-Recursive Filling:
+4. Exclude the letters A, E, I, O, U, H, W, and Y (unless they are the first letter)
 
-For each cell 
-𝐷[𝑖][𝑗] calculate the minimum of the three operations (insertion, deletion, substitution).
-Result Extraction:
+5. Ensure the resulting code is exactly 4 characters by truncating digits or appending zeros.
 
-The value in 
-𝐷[𝑚][𝑛] is the Levenshtein distance between 𝑥 and 𝑦
-
-
-
-![image](https://github.com/user-attachments/assets/b7eb0dae-da06-4cd6-8a04-4ced7b94810e)
+Preprocessing:
+Convert the input to uppercase.
+Encoding Loop:
+Iterate through the string to map and process each character.
+Postprocessing:
+Handle duplicate removal and zero-padding.
 
 

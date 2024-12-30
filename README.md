@@ -1,6 +1,8 @@
 takes into account the three fundamental editing operations - insertions, deletions and substitutions - in order to evaluate the dissimilarity between two strings.
 Levenshtein distance is defined as the minimum number of single-character edits required to convert one string (𝑥) into another (𝑦). Mathematically, it is expressed as:
-$L(x, y)=\min \begin{cases}L(x-1, y)+1 & \text { (deletion) } \\ L(x, y-1)+1 & \text { (insertion) } \\ L(x-1, y-1)+\text { cost } & \text { (substitution, where cost = 0 if characters match, otherwise 1) }\end{cases}$
+
+
+L(x, y)=\min \begin{cases}L(x-1, y)+1 & \text { (deletion) } \\ L(x, y-1)+1 & \text { (insertion) } \\  \ L(x-1, y-1)+\text { cost }& \text { (substitution) }\end{cases}
 
 The distance is computed using dynamic programming, filling a two-dimensional matrix where each cell represents the distance for a substring pair
 

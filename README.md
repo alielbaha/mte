@@ -43,8 +43,33 @@ This repository contains implementations, benchmarks, stress tests, and visualiz
 4. **Damerau-Levenshtein Distance**  
    An enhanced version of Levenshtein Distance that includes transpositions as valid edits.
 
-5. **Jaro Similarity (Jaro Distance)**  
+5. **Needleman-Wunsch Algorithm**  
+   A dynamic programming algorithm for global sequence alignment, often used in bioinformatics.
+
+6. **Smith-Waterman Algorithm**  
+   A dynamic programming algorithm for local sequence alignment, useful for identifying similar regions between two strings.
+
+7. **Bitap Algorithm**  
+   Also known as the Shift-Or or Shift-And algorithm, it efficiently performs approximate string matching using bitwise operations.
+
+### Similarity-Based Algorithms
+
+8. **Jaro Similarity (Jaro Distance)**  
    A metric for comparing two strings based on character matching and transpositions, emphasizing their similarity.
+
+9. **Jaro-Winkler Distance**  
+   An extension of the Jaro similarity metric that gives more weight to common prefixes, making it suitable for short strings.
+
+### Phonetic Algorithms
+
+10. **Soundex**  
+    A phonetic algorithm for indexing names by sound as pronounced in English, useful for name matching.
+
+11. **Metaphone**  
+    A phonetic algorithm for matching words based on their English pronunciation.
+
+12. **Double Metaphone**  
+    An advanced version of Metaphone that accounts for multiple possible pronunciations of a word.
 
 ## Benchmarks and Stress Tests
 

@@ -25,88 +25,74 @@ Iterate through the string to map and process each character.
 
 
 
-# String Matching Algorithms Benchmark
+Damerau-Levenshtein Distance
+The Damerau-Levenshtein Distance extends the Levenshtein distance by including the transposition operation. It calculates the minimum number of operations required to transform one string into another, where the allowed operations are:
 
-This repository contains implementations, benchmarks, stress tests, and visualizations of famous string matching algorithms. These algorithms are widely used in various fields like text processing, natural language processing, and data deduplication. The repository aims to provide a comprehensive comparison of the algorithms in terms of efficiency and accuracy.
-
-## Implemented Algorithms
-
-1. **Hamming Distance**  
-   Calculates the number of positions at which the corresponding characters of two equal-length strings differ.
-
-2. **Damerau Distance (Transpositions Only)**  
-   Extends the Hamming Distance by including transpositions, i.e., swapping two adjacent characters.
-
-3. **Levenshtein Distance**  
-   Measures the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one string into the other.
-
-4. **Damerau-Levenshtein Distance**  
-   An enhanced version of Levenshtein Distance that includes transpositions as valid edits.
-
-5. **Needleman-Wunsch Algorithm**  
-   A dynamic programming algorithm for global sequence alignment, often used in bioinformatics.
-
-6. **Smith-Waterman Algorithm**  
-   A dynamic programming algorithm for local sequence alignment, useful for identifying similar regions between two strings.
-
-7. **Bitap Algorithm**  
-   Also known as the Shift-Or or Shift-And algorithm, it efficiently performs approximate string matching using bitwise operations.
-
-### Similarity-Based Algorithms
-
-8. **Jaro Similarity (Jaro Distance)**  
-   A metric for comparing two strings based on character matching and transpositions, emphasizing their similarity.
-
-9. **Jaro-Winkler Distance**  
-   An extension of the Jaro similarity metric that gives more weight to common prefixes, making it suitable for short strings.
-
-### Phonetic Algorithms
-
-10. **Soundex**  
-    A phonetic algorithm for indexing names by sound as pronounced in English, useful for name matching.
-
-11. **Metaphone**  
-    A phonetic algorithm for matching words based on their English pronunciation.
-
-12. **Double Metaphone**  
-    An advanced version of Metaphone that accounts for multiple possible pronunciations of a word.
-
-## Benchmarks and Stress Tests
-
-The repository includes detailed benchmarks and stress tests for the algorithms under various conditions:
-- **Input Size:** Small to large strings.
-- **Character Sets:** Different types of character distributions.
-- **Performance Metrics:** Execution time, memory usage, and accuracy.
-
-## Visualizations
-
-Graphical representations of the results provide insights into:
-- Algorithmic efficiency under different scenarios.
-- The trade-offs between execution time and accuracy.
-
-## Repository Structure
-
-```plaintext
-.
-├── algorithms/
-│   ├── hamming.py
-│   ├── damerau.py
-│   ├── levenshtein.py
-│   ├── damerau_levenshtein.py
-│   └── jaro.py
-├── benchmarks/
-│   ├── performance_tests.py
-│   ├── stress_tests.py
-│   └── visualization.ipynb
-├── data/
-│   └── sample_inputs.txt
-├── results/
-│   ├── benchmark_results.csv
-│   └── visualizations/
-├── README.md
-└── LICENSE
-
-Postprocessing:
-Handle duplicate removal and zero-padding.
+Insertions
+Deletions
+Substitutions
+Transpositions (swapping two adjacent characters)
+Mathematically, it is expressed as:
 
 
+Where:
+
+cost=0 if characters match, 1 otherwise.
+Algorithmic Implementation
+The Damerau-Levenshtein distance is implemented using a dynamic programming approach with an additional condition to handle transpositions.
+
+Initialization:
+Create a matrix D of size (m+1)×(n+1), where 𝑚 and 𝑛 are the lengths of the strings 𝑥 and 𝑦. Initialize the first row and column to represent the cost of transforming one string into an empty string.
+
+Recursive Filling:
+For each cell 
+
+D[i][j], calculate the minimum cost among the four operations: insertion, deletion, substitution, and transposition.
+
+Result Extraction:
+The value in 
+𝐷[𝑚][𝑛] is the Damerau-Levenshtein distance between 𝑥 and 𝑦
+
+Jaro Distance
+The Jaro Distance measures the similarity between two strings. It is especially useful for comparing short strings, such as names. It considers matching characters and the number of transpositions.
+
+The Jaro Distance is defined as:
+
+
+Where:
+∣𝑚∣ is the number of matching characters (characters that are the same and within a specific matching window).
+∣𝑡∣ is half the number of transpositions (mismatched order of matched characters).
+Algorithmic Implementation
+Matching Window:
+Define a window size as max(∣𝑥∣,∣𝑦∣)/2−1. 
+
+Characters in one string can only be considered a match if they are within this window in the other string.
+
+Counting Matches:
+Identify matching characters within the matching window.
+
+Calculating Transpositions:
+Count the number of transpositions (mismatched order of matched characters).
+
+Jaro Distance Calculation:
+Use the formula above to compute the similarity score.
+
+Jaro-Winkler Distance
+The Jaro-Winkler Distance is an extension of the Jaro Distance, giving higher weight to common prefixes of the two strings. It is useful for short strings where matching prefixes are significant.
+
+The Jaro-Winkler Distance is defined as:
+
+
+Where:
+𝐽(𝑥,𝑦) is the Jaro Distance.
+𝑙 is the length of the common prefix (up to a maximum of 4 characters).
+𝑝 is a constant scaling factor (usually 𝑝 = 0.1).
+Algorithmic Implementation
+Calculate Jaro Distance:
+Follow the steps to compute 𝐽(𝑥,𝑦)
+
+Determine Prefix Length:
+Identify the number of matching characters at the start of the two strings, up to a maximum of 4 characters.
+
+Apply Jaro-Winkler Adjustment:
+Modify the Jaro Distance using the formula above.

@@ -96,3 +96,16 @@ Identify the number of matching characters at the start of the two strings, up t
 
 Apply Jaro-Winkler Adjustment:
 Modify the Jaro Distance using the formula above.
+
+
+
+![image](https://github.com/user-attachments/assets/2e5a64a1-2c95-4589-ad88-8bee8a529e69)
+
+
+![image](https://github.com/user-attachments/assets/067d1037-6965-4bd2-a034-89cf5bde638a)
+
+![image](https://github.com/user-attachments/assets/7fdcb174-1635-4022-bdc2-d52fac26f970)
+
+
+
+
